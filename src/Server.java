@@ -37,12 +37,7 @@ public class Server {
                 String line;
 
                 String queryString = exchange.getRequestURI().getRawQuery();
-/* 
-                while ((line = br.readLine()) != null) {
-                    request.append(line);
-                }
-                br.close();
-*/                
+                               
                 // Print the POST request data
                 System.out.println("Received GET request:");
                 System.out.println(request.toString());
