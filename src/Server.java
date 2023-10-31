@@ -17,7 +17,7 @@ public class Server {
         HttpServer server = HttpServer.create(new java.net.InetSocketAddress(port), 0);
         
         // Define a context for handling POST requests
-        server.createContext("/post", new PostHandler());
+        server.createContext("/post", new GetHandler());
         
         // Start the server
         server.setExecutor(null); // Use the default executor
@@ -26,16 +26,12 @@ public class Server {
         System.out.println("Server is listening on port " + port);
     }
     
-    static class PostHandler implements HttpHandler {
+    static class GetHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             if ("GET".equals(exchange.getRequestMethod())) {
-                InputStream input = exchange.getRequestBody();
-                InputStreamReader isr = new InputStreamReader(input);
-                BufferedReader br = new BufferedReader(isr);
-                StringBuilder request = new StringBuilder();
-                String line;
 
+                StringBuilder request = new StringBuilder();
                 String queryString = exchange.getRequestURI().getRawQuery();
                                
                 // Print the POST request data
