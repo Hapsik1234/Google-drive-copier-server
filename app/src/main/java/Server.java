@@ -1,7 +1,6 @@
-package src;
+package app.src.main.java;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
-import src.GoogleDrive;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;

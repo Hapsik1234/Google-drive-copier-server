@@ -1,4 +1,4 @@
-package src;
+package app.src.main.java;
 
 class GoogleDrive {
 
