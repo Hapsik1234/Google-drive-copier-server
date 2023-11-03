@@ -3,6 +3,7 @@
  */
 
 package app.src.main.java;
+
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
@@ -16,23 +17,48 @@ import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.util.HashMap;
+import java.lang.Thread;
+
+import app.src.main.java.GoogleDrive;
 
 public class Server {
+
+    static public boolean runnning; // Check if server is running (and yes I know thats not the perfect way to do that)
+
+    public static boolean doNothing() {
+        return true;
+    }
+
     public static void main(String[] args) throws IOException {
 
         int port = 80;
         HttpServer server = HttpServer.create(new java.net.InetSocketAddress(port), 0);
         
+
+        
         // Define a context for handling POST requests
+
         server.createContext("/post", new GetHandler(server));
         
         // Start the server
         server.setExecutor(null); // Use the default executor
         server.start();
+        runnning = true;
         
+        System.out.println("Waiting for user to scan QR code...");
         System.out.println("Server is listening on port " + port);
 
-        
+        while (runnning) {
+            try  { Thread.sleep(100); } catch (Exception e) {}
+        }
+
+        // The server has benn stopped
+
+        System.out.println("Uploading into Google Drive...");
+
+        // TODO: Upload to Google Drive
+
+        new GoogleDrive().uploadBasic();
 
     }
     
@@ -42,6 +68,8 @@ public class Server {
 
         public GetHandler(HttpServer getserver) {
             this.server = getserver;
+
+            runnning = true;
         }
 
         @Override
@@ -53,15 +81,15 @@ public class Server {
 
                 HashMap<String, String> parameterHashMap = new HashMap<String, String>();   // Define Hashmap of params
                 
-                System.out.println("Recived GET request with params:");
+                System.out.println("Recived GET request from user with params:");
 
                 if (paramsRaw!=null) {
 
                     String[] params = paramsRaw.toString().split("&");
 
-                    String urlParameter = "url";    // Choose the parameter correcponding for url of the file
+                    String urlParameter = "url";    // Choose the parameter correcponding with url of the file
 
-                    int urls = 0;   // Numbers of those parameters for checking if there is only one url
+                    int urls = 0;   // Define numbers of those parameters for checking if there is only one url
 
                     for (int i=0;i<params.length;i++) {
 
@@ -81,14 +109,29 @@ public class Server {
                         String file="/asset/secret.txt";
                         String fileName="secret.txt";
 
-                        // Handling the correct case of urls
+                        // Handle the correct case
+                        System.out.print("Got the adderess from user: ");
                         System.out.println(parameterHashMap.get(urlParameter));
 
                         try {
 
-                            new DownloadFile().download(parameterHashMap.get(urlParameter) + file, fileName);
+                            // TODO: Get URL address of the file
 
-                            System.out.println("Successfully downloaded file!");
+
+
+                            //Download the file
+
+                            String fullURL = parameterHashMap.get(urlParameter) + file;
+
+                            System.out.print("Downloading file ");
+                            System.out.print(fullURL);
+                            System.out.println("...");
+
+                            new DownloadFile().download(fullURL, fileName);
+
+                            System.out.print("Downloading file ");
+                            System.out.print(fullURL);
+                            System.out.println("...Success");
 
                             String response = "<h1>Everything seems good!<h1/>For now from you that's all.";
                             exchange.sendResponseHeaders(200, response.length());
@@ -96,9 +139,11 @@ public class Server {
                             os.write(response.getBytes());
                             os.close();
 
-                            System.out.println("Stopping server.");
 
-                            this.server.stop(5);
+
+                            System.out.println("Stopping server");
+                            runnning = false;
+                            this.server.stop(0);
 
                         } catch (IOException e) {
                             
@@ -148,4 +193,6 @@ public class Server {
             Files.copy(in, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING);
         }
     }
+
+
 }
