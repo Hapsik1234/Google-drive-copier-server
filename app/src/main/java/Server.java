@@ -81,7 +81,7 @@ public class Server {
                         String file="/asset/secret.txt";
                         String fileName="secret.txt";
 
-                        // Handling the correct case
+                        // Handling the correct case of urls
                         System.out.println(parameterHashMap.get(urlParameter));
 
                         try {
