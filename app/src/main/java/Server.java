@@ -57,8 +57,13 @@ public class Server {
         System.out.println("Uploading into Google Drive...");
 
         // TODO: Upload to Google Drive
-
-        new GoogleDrive().uploadBasic();
+        try {
+            new GoogleDrive().run();
+        } catch (Exception e) {
+            System.out.print("Cought error:");
+            System.out.println(e);            
+        }
+        
 
     }
     
